@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "26bdf431-5044-41b8-8e38-8211abec07c3"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -24,7 +25,10 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"]
+            "styles": [
+              "bootstrap/dist/css/bootstrap.min.css",
+              "src/styles.css"
+            ]
           },
           "configurations": {
             "production": {
@@ -52,6 +56,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "frontend:build:production"

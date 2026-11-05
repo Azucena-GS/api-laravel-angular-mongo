@@ -237,6 +237,18 @@ Cuando los servicios estén activos, abre:
 
 - http://localhost:4201
 - http://localhost:8000
+- http://localhost:8000/docs/api — documentación interactiva de Scramble.
+- http://localhost:8000/docs/api.json — especificación OpenAPI.
+- http://localhost:8000/api/libros — API REST para consultar, crear, actualizar y eliminar libros de la colección MongoDB `books`.
+- http://localhost:8000/api/health — estado de la conexión a MongoDB.
+
+El endpoint de libros responde con `{ "data": [...] }`. Si la colección `books` todavía no tiene documentos, devuelve una lista vacía. Scramble genera la documentación a partir de las rutas bajo `/api`.
+
+Para cargar libros de ejemplo en MongoDB (el seeder no duplica datos si la colección ya contiene libros):
+
+```bash
+docker compose exec laravel php artisan db:seed --class='Database\Seeders\BooksSeeder'
+```
 
 ## 7. Instalación en Windows
 

@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "http://laravel:8000",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

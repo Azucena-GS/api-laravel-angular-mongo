@@ -1,6 +1,7 @@
 
 services:
   laravel:
+    restart: unless-stopped
     build:
       context: ./backend
     container_name: desarrollo_laravel
@@ -12,20 +13,31 @@ services:
     environment:
       MONGODB_URI: "mongodb://devroot:devpass@mongo:27017/laravel_app?authSource=admin"
       MONGODB_DATABASE: "laravel_app"
+      SESSION_DRIVER: file
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     command:
       - sh
       - -c
       - |
-        if [ -f artisan ]; then
-          php artisan serve --host=0.0.0.0 --port=8000
-        else
-          echo "Inicializa Laravel en ./backend"
-          sleep infinity
+        if [ ! -f artisan ]; then
+          echo "No se encontró artisan en ./backend" >&2
+          exit 1
         fi
+        if [ ! -f vendor/autoload.php ]; then
+          composer install --no-interaction --prefer-dist
+        fi
+        exec php artisan serve --host=0.0.0.0 --port=8000
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/up || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
   angular:
+    restart: unless-stopped
     build:
       context: ./frontend
     container_name: desarrollo_angular
@@ -34,6 +46,24 @@ services:
       - ./frontend:/app
     ports:
       - "4201:4200"
+    command:
+      - sh
+      - -c
+      - |
+        if [ ! -f package.json ]; then
+          echo "No se encontró package.json en ./frontend" >&2
+          exit 1
+        fi
+        if [ ! -x node_modules/.bin/ng ]; then
+          npm ci
+        fi
+        exec npm start -- --host 0.0.0.0 --proxy-config proxy.docker.conf.json
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4200/').then(response => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   mongo:
     image: docker.io/library/mongo:7.0
@@ -43,9 +73,16 @@ services:
       MONGO_INITDB_ROOT_USERNAME: devroot
       MONGO_INITDB_ROOT_PASSWORD: devpass
     volumes:
-      - mongodb_data:/data/db
+      - mongodb_data_clean:/data/db
     ports:
-      - "127.0.0.1:27017:27017"
+      - "127.0.0.1:27018:27017"
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --username \"$$MONGO_INITDB_ROOT_USERNAME\" --password \"$$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase admin --eval \"db.adminCommand({ ping: 1 }).ok\" | grep -q 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
 volumes:
   mongodb_data:
+  mongodb_data_clean:

@@ -1,0 +1,100 @@
+.book-manager {
+  max-width: 1044px;
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+.book-manager > header h1 {
+  font-size: 1.55rem;
+}
+
+.book-panel {
+  border-color: #e2e5e9;
+  border-radius: 0.35rem;
+}
+
+.book-panel .card-body {
+  padding: 1rem 1.15rem;
+}
+
+.book-panel h2 {
+  font-size: 1rem;
+}
+
+.book-form-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1.55fr 1fr 1fr 1fr;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.book-form-grid .form-label {
+  margin-bottom: 0.35rem;
+  font-size: 0.875rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.form-actions .btn {
+  width: 100%;
+}
+
+.catalog-count {
+  font-size: 0.75rem;
+}
+
+.table {
+  font-size: 0.875rem;
+}
+
+.table thead th {
+  white-space: nowrap;
+}
+
+.table tbody td {
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+}
+
+.table tbody td:first-child {
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 991.98px) {
+  .book-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+
+  .form-actions .btn {
+    width: auto;
+    min-width: 9rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .book-manager {
+    padding-top: 1.5rem;
+  }
+
+  .book-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    grid-column: auto;
+    flex-direction: column-reverse;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}
